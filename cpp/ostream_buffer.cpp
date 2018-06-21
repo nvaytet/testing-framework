@@ -10,7 +10,7 @@
 
 using namespace std::chrono;
 
-std::string original(int prec, int n, const char separator) {
+std::string original(int prec, int n, const std::string separator) {
 
   std::vector<double> vec;
   for (int i = 0; i < n; i++) {
@@ -32,7 +32,7 @@ std::string original(int prec, int n, const char separator) {
   return output.str();
 }
 
-std::string method1(int prec, int n, const char separator) {
+std::string method1(int prec, int n, const std::string separator) {
 
   std::vector<double> vec;
   for (int i = 0; i < n; i++) {
@@ -59,7 +59,7 @@ std::string method1(int prec, int n, const char separator) {
 }
 
 
-std::string omp(int prec, int n, const char separator) {
+std::string omp(int prec, int n, const std::string separator) {
 
   std::vector<double> vec;
   for (int i = 0; i < n; i++) {
@@ -126,20 +126,25 @@ std::string omp(int prec, int n, const char separator) {
 
 
 
-std::string omp(int prec, int n, const char separator) {
+std::string omp_iter(int prec, int n, const std::string separator) {
 
   std::vector<double> vec;
   for (int i = 0; i < n; i++) {
     vec.push_back(static_cast<double>(i));
   }
 
-  int nt;
+  int nt = 0;
   #pragma omp parallel
   {
     nt = omp_get_num_threads();
   }
-//   std::cout << nt;
+  std::cout << nt;
   
+  
+  
+//   std::vector<double>::iterator it;
+  std::vector<double>::iterator begin = vec.begin();
+  std::vector<double>::iterator end = vec.end();
   
   std::vector<std::ostringstream> omp_out(nt);
 //   for (int i = 0; i < nt; i++){
@@ -147,10 +152,14 @@ std::string omp(int prec, int n, const char separator) {
 //   }
   
 //   #pragma omp parallel default(shared) private(tid,nthreads) 
+  
+  // Get the distance between begining and end
+  int dist = std::distance(begin, end);
+  
   #pragma omp parallel
   {
     int tid = omp_get_thread_num();
-    int nthreads = omp_get_num_threads();
+//     int nthreads = omp_get_num_threads();
     
 //     int step = n / nthreads;
 //     int istart = tid * step;
@@ -158,10 +167,17 @@ std::string omp(int prec, int n, const char separator) {
 //     std::cout << "thread " << tid << "has istart " << istart << std::endl;
     
 //     std::ostringstream output;
+    
+    std::vector<double>::iterator it;
+    
+    
+    
     #pragma omp for
-    for (int i = 0; i < n; i++) {
+//     for (it = begin; it != end;) {
+    for (int i = 0; i < dist; i++) {
 //       omp_out[tid] << std::setprecision(prec) << std::scientific << vec[i] << separator;
-      omp_out[tid] << vec[i] << separator;
+      omp_out[tid] << separator << *(begin + i);
+//       it++;
     }
 //     std::vector<double>::iterator it;
 //     std::vector<double>::iterator begin = vec.begin();
@@ -178,11 +194,21 @@ std::string omp(int prec, int n, const char separator) {
 //      std::cout << "thread: " << tid << " " << output.str() << std::endl;
   }
   
+  
+//   for (int i = 0; i < nt; i++){
+//     std::cout << omp_out[i].str() << std::endl;
+//   }
+  
+  
+  
   for (int i = 1; i < nt; i++){
     omp_out[0] << omp_out[i].str();
+    
   }
   
-  return omp_out[0].str();
+  int sep_len = separator.length();
+  
+  return omp_out[0].str().erase(0,sep_len);
 //   return " ";
 }
 
@@ -211,8 +237,8 @@ std::string omp(int prec, int n, const char separator) {
 int main() {
 
   int prec = 10;
-  int n = 100000;
-  char separator = ',';
+  int n = 1000000;
+  const std::string separator = ",";
 
   milliseconds ms1, ms2;
 
@@ -229,9 +255,14 @@ int main() {
   
   ms1 = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
   std::string s3 = omp(prec, n, separator);
-//   std::cout << s3;
   ms2 = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
   std::cout << "OMP : " << (ms2 - ms1).count() << "\n";
+  
+  ms1 = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+  std::string s4 = omp_iter(prec, n, separator);
+  ms2 = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+  std::cout << "OMP_ITER : " << (ms2 - ms1).count() << "\n";
+//   std::cout << s4;
   
 //   std::string message = fmt::format("The answer is {}", 42);
 
