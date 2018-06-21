@@ -268,3 +268,88 @@ int main() {
 
   return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // In Strings.h
+
+// template <typename ITERATOR_TYPE>
+// DLLExport std::string join(ITERATOR_TYPE begin, ITERATOR_TYPE end,
+//                            const std::string &separator) {
+//   
+//   int nThreads = PARALLEL_NUMBER_OF_THREADS;
+// //   #pragma omp parallel
+// //   {
+// //     nThreads = PARALLEL_NUMBER_OF_THREADS;
+// //   }
+// 
+// //   if (nThreads == 0) {
+// //     
+// //     std::ostringstream output;
+// //     ITERATOR_TYPE it;
+// //     for (it = begin; it != end;) {
+// //       output << *it;
+// //       it++;
+// //       if (it != end)
+// //         output << separator;
+// //     }
+// //     return output.str();
+// //     
+// //   } else {
+//   
+//   std::vector<std::ostringstream> output(nThreads);
+//   
+//   // Get the distance between begining and end
+//   long int dist = std::distance(begin, end);
+//     
+//   #pragma omp parallel
+//   {
+//     int idThread = PARALLEL_THREAD_NUMBER;
+//     ITERATOR_TYPE it;
+//     
+//     
+//     #pragma omp for
+//     for (int i = 0; i < dist; i++) {
+//       output[idThread] << separator << *(begin + i);
+//     }
+//   }
+//   
+//   for (int i = 1; i < nThreads; i++){
+//     output[0] << output[i].str();
+//   }
+//   
+// //   int sep_len = separator.length();
+//   
+//   return output[0].str().erase(0,separator.length());
+//     
+// //   }
+// 
+// }
