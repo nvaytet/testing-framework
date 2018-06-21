@@ -220,10 +220,56 @@ std::string omp_iter(int prec, int n, const std::string separator) {
 
 
 
+std::string omp_iter2(int prec, int n, const std::string separator) {
 
+  std::vector<double> vec;
+  for (int i = 0; i < n; i++) {
+    vec.push_back(static_cast<double>(i));
+  }
 
+  int nt = 0;
+  #pragma omp parallel
+  {
+    nt = omp_get_num_threads();
+  }
+//   std::cout << nt;
+  
+  
+  
+//   std::vector<double>::iterator it;
+//   std::vector<double>::iterator begin = vec.begin();
+//   std::vector<double>::iterator end = vec.end();
+  
+  std::vector<std::ostringstream> omp_out(nt);
 
+#pragma omp parallel
+  {
+//     auto it_v = v.begin(),it_d = d.begin();
+    int tid = omp_get_thread_num();
+    std::vector<double>::iterator it_v = vec.begin();
+    #pragma openmp for
+    for(; it_v!=vec.end();++it_v)
+    {
+      omp_out[tid] << separator << *it_v; 
+    }
+    
+    
+    
+  }
 
+  for (int i = 0; i < nt; i++){
+    std::cout << omp_out[i].str() << std::endl;
+  }
+  
+  for (int i = 1; i < nt; i++){
+    omp_out[0] << omp_out[i].str();
+    
+  }
+  
+//   int sep_len = separator.length();
+  
+  return omp_out[0].str().erase(0,separator.length());
+}
 
 
 
@@ -237,7 +283,7 @@ std::string omp_iter(int prec, int n, const std::string separator) {
 int main() {
 
   int prec = 10;
-  int n = 1000000;
+  int n = 100;
   const std::string separator = ",";
 
   milliseconds ms1, ms2;
@@ -264,6 +310,11 @@ int main() {
   std::cout << "OMP_ITER : " << (ms2 - ms1).count() << "\n";
 //   std::cout << s4;
   
+  ms1 = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+  std::string s5 = omp_iter2(prec, n, separator);
+  ms2 = duration_cast<milliseconds>(system_clock::now().time_since_epoch());
+  std::cout << "OMP_ITER2 : " << (ms2 - ms1).count() << "\n";
+//   std::cout << s5;
 //   std::string message = fmt::format("The answer is {}", 42);
 
   return 0;
