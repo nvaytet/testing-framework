@@ -241,34 +241,40 @@ std::string omp_iter2(int prec, int n, const std::string separator) {
 //   std::vector<double>::iterator end = vec.end();
   
   std::vector<std::ostringstream> omp_out(nt);
+  std::ostringstream output;
 
 #pragma omp parallel
   {
 //     auto it_v = v.begin(),it_d = d.begin();
     int tid = omp_get_thread_num();
-    std::vector<double>::iterator it_v = vec.begin();
-    #pragma openmp for
-    for(; it_v!=vec.end();++it_v)
+    std::vector<double>::iterator it_v;
+    #pragma omp for
+    for(it_v = vec.begin(); it_v!=vec.end();++it_v)
     {
-      omp_out[tid] << separator << *it_v; 
+//       omp_out[tid] << separator << *it_v; 
+      output << separator << *it_v; 
+      
     }
     
     
     
   }
 
-  for (int i = 0; i < nt; i++){
-    std::cout << omp_out[i].str() << std::endl;
-  }
+  std::cout << output.str();
   
-  for (int i = 1; i < nt; i++){
-    omp_out[0] << omp_out[i].str();
-    
-  }
+//   for (int i = 0; i < nt; i++){
+//     std::cout << omp_out[i].str() << std::endl;
+//   }
+//   
+//   for (int i = 1; i < nt; i++){
+//     omp_out[0] << omp_out[i].str();
+//     
+//   }
   
 //   int sep_len = separator.length();
   
-  return omp_out[0].str().erase(0,separator.length());
+//   return omp_out[0].str().erase(0,separator.length());
+  return output.str();
 }
 
 
@@ -396,6 +402,93 @@ int main() {
 //   for (int i = 1; i < nThreads; i++){
 //     output[0] << output[i].str();
 //   }
+//   
+// //   int sep_len = separator.length();
+//   
+//   return output[0].str().erase(0,separator.length());
+//     
+// //   }
+// 
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// template <typename ITERATOR_TYPE>
+// DLLExport std::string join(ITERATOR_TYPE begin, ITERATOR_TYPE end,
+//           const std::string &separator,
+//           typename std::enable_if<!(std::is_same<typename std::iterator_traits<ITERATOR_TYPE>::iterator_category,
+//                            std::random_access_iterator_tag>::value)>::type * =
+//                            nullptr) {
+//   std::ostringstream output;
+//   ITERATOR_TYPE it;
+//   std::cout << "Entering string JOIN\n";
+//   for (it = begin; it != end;) {
+//     output << *it;
+//     it++;
+//     if (it != end)
+//       output << separator;
+//   }
+// //   std::cout << "Leaving string JOIN\n";
+//   return output.str();
+// }
+// 
+// template <typename ITERATOR_TYPE>
+// DLLExport std::string join(ITERATOR_TYPE begin, ITERATOR_TYPE end,
+//                            const std::string &separator,
+//                            typename std::enable_if<(std::is_same<typename std::iterator_traits<ITERATOR_TYPE>::iterator_category,
+//                            std::random_access_iterator_tag>::value)>::type * =
+//                            nullptr) {
+//   
+//   std::cout << "Using specialised JOIN function" << std::endl;
+//   
+//   int nThreads = 1;
+//   
+//   #pragma omp parallel
+//   {
+//     nThreads = PARALLEL_NUMBER_OF_THREADS;
+//   }
+// //   std::cout << "got to here 0 " << nThreads << "\n";
+//   
+//   std::vector<std::ostringstream> output(nThreads);
+// //   std::cout << "got to here 0.5\n";
+//   // Get the distance between begining and end
+//   long int dist = std::distance(begin, end);
+// //   std::cout << "got to here 1\n";  
+//   #pragma omp parallel
+//   {
+//     int idThread = PARALLEL_THREAD_NUMBER;
+//     ITERATOR_TYPE it;
+// //     std::cout << "got to here 2 : thread " << idThread << std::endl;
+//     
+//     #pragma omp for
+//     for (int i = 0; i < dist; i++) {
+//       output[idThread] << separator << *(begin + i);
+//     }
+//   }
+//   
+// //   std::cout << "got to here 3\n";
+//   
+//   for (int i = 1; i < nThreads; i++){
+//     output[0] << output[i].str();
+//   }
+// //   std::cout << "got to here 4\n";
 //   
 // //   int sep_len = separator.length();
 //   
