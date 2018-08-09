@@ -13,7 +13,7 @@ CreateSampleWorkspace(OutputWorkspace=wksp,
                       XUnit='Wavelength')
 
 ResampleX(InputWorkspace=wksp,
-          OutputWorkspace=wksp,
+          OutputWorkspace=wksp+'1',
           XMin=[lambdaMin],
           XMax=[lambdaMax],
           NumberBins=int(lambdaBinning))
@@ -25,7 +25,7 @@ print("-"*35)
 ConvertToDistribution(wksp)
 
 ResampleX(InputWorkspace=wksp,
-          OutputWorkspace=wksp,
+          OutputWorkspace=wksp+'2',
           XMin=[lambdaMin],
           XMax=[lambdaMax],
           NumberBins=int(lambdaBinning))
@@ -33,3 +33,4 @@ ResampleX(InputWorkspace=wksp,
 print("-"*35)
 print("Workspace2D: Distribution == True => Success!")
 print("-"*35)
+
