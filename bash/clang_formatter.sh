@@ -21,9 +21,10 @@ for f in $(git diff --name-only master $thisBranch); do
     theDiff=$(diff $fname clang_formatter.tmp);
     theString="${f} ${hrule:${#f}}";
     if [ ${#theDiff} -gt 0 ] ; then
-        echo "${theString} [FIXED]";
+        theString="${theString} [FIXED]";
     else
-        echo "${theString} [ OK  ]";
+        theString="${theString} [ OK  ]";
     fi
+    echo "${theString}";
     rm $tempfile;
 done
