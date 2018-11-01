@@ -16,15 +16,17 @@ done
 # Go through the list of changed files
 for f in $(git diff --name-only master $thisBranch); do
     fname="${topLevelDir}/${f}";
-    cp $fname $tempfile;
-    clang-format-5.0 -i $fname;
-    theDiff=$(diff $fname clang_formatter.tmp);
-    theString="${f} ${hrule:${#f}}";
-    if [ ${#theDiff} -gt 0 ] ; then
-        theString="${theString} [FIXED]";
-    else
-        theString="${theString} [ OK  ]";
+    if [ ${fname:$((${#fname}-4)):4} == ".cpp" ] || [ ${fname:$((${#fname}-2)):2} == ".h" ]; then
+      cp $fname $tempfile;
+      clang-format-5.0 -i $fname;
+      theDiff=$(diff $fname clang_formatter.tmp);
+      theString="${f} ${hrule:${#f}}";
+      if [ ${#theDiff} -gt 0 ] ; then
+          theString="${theString} [FIXED]";
+      else
+          theString="${theString} [ OK  ]";
+      fi
+      echo "${theString}";
+      rm $tempfile;
     fi
-    echo "${theString}";
-    rm $tempfile;
 done
